@@ -46,6 +46,6 @@ class Api::V1::ShortLinksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def short_link_params
-      params.require(:short_link).permit(:original_url, :short_url)
+      params.require(:short_link).permit(:original_url, :slug)
     end
 end
