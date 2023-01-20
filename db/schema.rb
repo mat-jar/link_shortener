@@ -21,7 +21,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_19_231629) do
     t.integer "last_use"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["original_url"], name: "index_short_links_on_original_url", unique: true
     t.index ["slug"], name: "index_short_links_on_slug", unique: true
   end
 
