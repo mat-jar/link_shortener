@@ -1,6 +1,19 @@
 class Api::V1::ShortLinksController < ApplicationController
   before_action :set_short_link, only: %i[ show update destroy ]
 
+  def redirect
+    slug = params[:slug]
+    original_url = ShortLink.where(slug: slug).first&.original_url
+
+    if original_url
+
+      redirect_to original_url, allow_other_host: true
+
+    else
+      render json: { message: "Short link you provided is wrong" }, status: :not_found
+    end
+  end
+
   # GET /short_links
   def index
     @short_links = ShortLink.all

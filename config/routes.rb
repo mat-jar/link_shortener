@@ -5,8 +5,7 @@ Rails.application.routes.draw do
         resources :short_links
       end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  get '/:slug', to: 'api/v1/short_links#redirect'
+
 end
