@@ -19,12 +19,12 @@ RSpec.describe 'ShortLinks', type: :request do
 
     end
 
-    context 'with invalid slug' do
+    context 'with non-existing slug' do
       let!(:new_short_link) { FactoryBot.create(:short_link)}
 
         before do
-          invalid_slug = "#{new_short_link.slug}-foo-bar"
-          get "/#{invalid_slug}"
+          non_existing_slug = "#{new_short_link.slug}-foo-bar"
+          get "/#{non_existing_slug}"
         end
 
         it 'returns not found status' do
