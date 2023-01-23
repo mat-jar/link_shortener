@@ -8,7 +8,7 @@ RSpec.describe 'ShortLinks', type: :request do
 
       before do
         post '/api/v1/short_links', params:
-                          { short_link: {
+                          { new_short_link: {
                             original_url: new_short_link.original_url,
                             slug: new_short_link.slug
                           } }
@@ -32,7 +32,7 @@ RSpec.describe 'ShortLinks', type: :request do
 
       before do
         post '/api/v1/short_links', params:
-                          { short_link: {
+                          { new_short_link: {
                             original_url: ""
                           } }
       end
@@ -47,7 +47,7 @@ RSpec.describe 'ShortLinks', type: :request do
 
       before do
         post '/api/v1/short_links', params:
-                          { short_link: {
+                          { new_short_link: {
                             original_url: "",
                             slug: new_short_link.slug
                           } }
@@ -64,7 +64,7 @@ RSpec.describe 'ShortLinks', type: :request do
       before do
         invalid_original_url = "#{new_short_link.original_url}^"
         post '/api/v1/short_links', params:
-                          { short_link: {
+                          { new_short_link: {
                             original_url: ""
                           } }
       end
@@ -80,7 +80,7 @@ RSpec.describe 'ShortLinks', type: :request do
       before do
         invalid_slug = new_short_link.slug + "123"
         post '/api/v1/short_links', params:
-                          { short_link: {
+                          { new_short_link: {
                             original_url: new_short_link.original_url,
                             slug: invalid_slug
                           } }
@@ -88,6 +88,27 @@ RSpec.describe 'ShortLinks', type: :request do
 
       it 'returns an unprocessable entity status' do
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context 'with already used slug' do
+    let!(:old_short_link) { FactoryBot.create(:short_link)}
+    let!(:new_short_link) { FactoryBot.build(:short_link)}
+
+      before do
+        post '/api/v1/short_links', params:
+                          { new_short_link: {
+                            original_url: new_short_link.original_url,
+                            slug: old_short_link.slug
+                          } }
+      end
+
+      it 'returns an unprocessable entity status' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns the message' do
+        expect(JSON.parse(response.body)['message']).to eq("Given slug is already used")
       end
     end
 
