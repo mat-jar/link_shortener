@@ -2,11 +2,15 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: {format: 'json'} do
       namespace :v1 do
-        resources :short_links
+        get '/short_links', to: 'short_links#index'
+        post '/short_links', to: 'short_links#create'
+        put '/short_links', to: 'short_links#update'
+        delete '/short_links', to: 'short_links#destroy'
+        post '/short_links/show', to: 'short_links#show'
+
       end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  get '/:slug', to: 'api/v1/short_links#redirect'
+
 end
