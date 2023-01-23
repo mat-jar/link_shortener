@@ -3,9 +3,14 @@ class Api::V1::ShortLinksController < ApplicationController
 
   def redirect
     slug = params[:slug]
-    original_url = ShortLink.where(slug: slug).first&.original_url
+    short_link = ShortLink.where(slug: slug).first
+    original_url = short_link&.original_url
 
     if original_url
+
+      short_link.use_counter += 1
+      short_link.last_use = Time.now.to_i
+      short_link.save!
 
       redirect_to original_url, allow_other_host: true
 
@@ -23,7 +28,7 @@ class Api::V1::ShortLinksController < ApplicationController
 
   # GET /short_links/1
   def show
-    render json: @short_link, methods: [:short_url], status: :ok
+    render json: @short_link, methods: [:short_url, :formatted_last_use], status: :ok
   end
 
   # POST /short_links

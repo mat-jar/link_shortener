@@ -199,5 +199,26 @@ RSpec.describe 'ShortLinks', type: :request do
       end
     end
 
+    context 'with given original_link of already used short link' do
+    let!(:new_short_link) { FactoryBot.create(:short_link)}
+
+      before do
+        get "/#{new_short_link.slug}"
+
+        post '/api/v1/short_links/show', params:
+                          { short_link: {
+                            original_url: new_short_link.original_url
+                          } }
+      end
+
+      it 'returns correct use_counter' do
+        expect(JSON.parse(response.body)['use_counter']).to eq(1)
+      end
+
+      it 'returns a ok status' do
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
   end
 end
