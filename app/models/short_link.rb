@@ -5,6 +5,8 @@ class ShortLink < ApplicationRecord
   attribute :use_counter, default: 0
   validates_format_of :slug, :with => /\A[a-z]+(?:-[a-z]+)*\z/i
 
+  has_many :og_tags, dependent: :destroy
+
   def short_url
     return nil unless persisted?
     "#{ENV["HOST_NAME"]}/#{slug}" # http://localhost:3000/abc or https://xyz.herokuapp.com/abc

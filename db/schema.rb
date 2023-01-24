@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_19_231629) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_23_145527) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "og_tags", force: :cascade do |t|
+    t.string "property", null: false
+    t.string "content", null: false
+    t.bigint "short_link_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["property", "short_link_id"], name: "index_og_tags_on_property_and_short_link_id", unique: true
+    t.index ["short_link_id"], name: "index_og_tags_on_short_link_id"
+  end
 
   create_table "short_links", force: :cascade do |t|
     t.string "original_url", null: false
@@ -24,4 +34,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_19_231629) do
     t.index ["slug"], name: "index_short_links_on_slug", unique: true
   end
 
+  add_foreign_key "og_tags", "short_links"
 end
