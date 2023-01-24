@@ -13,6 +13,10 @@ gem "pg", "~> 1.1"
 gem "puma", "~> 5.0"
 
 gem 'dotenv-rails'
+gem 'nokogiri'
+gem 'httparty'
+gem 'selenium-webdriver'
+
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
