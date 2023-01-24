@@ -19,6 +19,24 @@ RSpec.describe 'ShortLinks', type: :request do
 
     end
 
+    context 'with valid slug and og_tags' do
+    let!(:new_short_link) { FactoryBot.create(:short_link)}
+
+      before do
+        new_short_link.og_tags.create!(property: "og:title", content: "Page title")
+        get "/#{new_short_link.slug}"
+      end
+
+      it 'returns found status' do
+        expect(response).to have_http_status(:found)
+      end
+
+      it "redirects to short_link" do
+        expect(response).to redirect_to(new_short_link.original_url)
+      end
+
+    end
+
     context 'with non-existing slug' do
       let!(:new_short_link) { FactoryBot.create(:short_link)}
 
