@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         put '/short_links', to: 'short_links#update'
         delete '/short_links', to: 'short_links#destroy'
         post '/short_links/show', to: 'short_links#show'
+        post '/short_links/fetch_og_tags', to: 'short_links#fetch_og_tags'
 
       end
   end
