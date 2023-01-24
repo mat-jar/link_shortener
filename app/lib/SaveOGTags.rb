@@ -16,7 +16,7 @@ class SaveOGTags < ApplicationService
 
   def save_og_tags
       @og_tags.each_pair do |key, value|
-      if key.match?(/\Aog:(.+)\z/i)
+      if key.match?(/\Aog:(.+)\z/i) && @short_link.og_tags.find_by(property: key).nil?
         @og_tag = @short_link.og_tags.new(property: key, content: value)
         @og_tag.save!
       end
