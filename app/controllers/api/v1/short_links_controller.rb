@@ -24,10 +24,11 @@ class Api::V1::ShortLinksController < ApplicationController
         @short_link.errors.add("og_tags", "Connection was established but couldn't fetch any OG tags")
       end
     end
-    if @short_link.errors
-      render json: @short_link, only: [:original_url], methods: [:short_url, :errors], status: :unprocessable_entity
-    else
+    if @short_link.errors.empty?
       render json: @short_link, only: [:original_url], methods: [:short_url], include: [:og_tags => {:only => [:property, :content] }], status: :created
+    else
+      render json: @short_link, only: [:original_url], methods: [:short_url, :errors], status: :unprocessable_entity
+
     end
   end
 
