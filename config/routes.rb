@@ -9,6 +9,14 @@ Rails.application.routes.draw do
         post '/short_links/show', to: 'short_links#show'
         post '/short_links/fetch_og_tags', to: 'short_links#fetch_og_tags'
 
+        post '/login', to: 'authentication#login'
+
+        get '/users', to: 'users#index'
+        post '/users', to: 'users#create'
+        put '/users', to: 'users#update'
+        delete '/users', to: 'users#destroy'
+        get '/users/show', to: 'users#show'
+
       end
   end
 
