@@ -1,4 +1,6 @@
 class Api::V1::ShortLinksController < ApplicationController
+
+  before_action :authorize, except: :redirect
   before_action :set_short_link, only: %i[ show update destroy fetch_og_tags]
 
   def redirect
@@ -33,7 +35,7 @@ class Api::V1::ShortLinksController < ApplicationController
   end
 
   def index
-    short_links = ShortLink.all
+    short_links = @current_user.short_links.all
     render json: short_links
   end
 
@@ -43,6 +45,7 @@ class Api::V1::ShortLinksController < ApplicationController
 
   def create
     short_link = ShortLink.new(new_short_link_params)
+    short_link.user = @current_user
 
     if new_short_link_params[:slug]
       if slug_exists?(new_short_link_params[:slug])
@@ -107,6 +110,11 @@ class Api::V1::ShortLinksController < ApplicationController
       if !@short_link
         render json: { message: "No record with given parameter(s)" }, status: :unprocessable_entity and return
       end
+
+      if @short_link.user != @current_user
+        render json: { message: "You are not authorized to manage this short link" }, status: :unauthorized and return
+      end
+
     end
 
     def new_short_link_params
