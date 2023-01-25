@@ -5,15 +5,30 @@ require "httparty"
 class FetchOGTags < ApplicationService
 
   def call
-    fetch_og_tags
+    set_og_tags
   end
 
   private
 
   attr_reader :url
 
-  def initialize(url)
-    @url = url
+  def initialize(short_link)
+    @short_link = short_link
+    @url = short_link.original_url
+  end
+
+  def set_og_tags
+    begin
+      og_tags_hash = fetch_og_tags
+    rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::TimeoutError, HTTParty::Error, OpenSSL::SSL::SSLError, SocketError => e
+      @short_link.errors.add("og_tags", e.message)
+    else
+      if !og_tags_hash.empty?
+        SaveOGTags.call(@short_link, og_tags_hash)
+      else
+        @short_link.errors.add("og_tags", "Connection was established but couldn't fetch any OG tags")
+      end
+    end
   end
 
   def fetch_og_tags

@@ -14,22 +14,12 @@ class Api::V1::ShortLinksController < ApplicationController
   end
 
   def fetch_og_tags
-    begin
-      og_tags_hash = FetchOGTags.call(@short_link.original_url)
-    rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::TimeoutError, HTTParty::Error, OpenSSL::SSL::SSLError, SocketError => e
-      @short_link.errors.add("og_tags", e.message)
-    else
-      if !og_tags_hash.empty?
-        SaveOGTags.call(@short_link, og_tags_hash)
-      else
-        @short_link.errors.add("og_tags", "Connection was established but couldn't fetch any OG tags")
-      end
-    end
+    FetchOGTags.call(@short_link)
+
     if @short_link.errors.empty?
       render json: @short_link, only: [:original_url], methods: [:short_url], include: [:og_tags => {:only => [:property, :content] }], status: :created
     else
       render json: @short_link, only: [:original_url], methods: [:short_url, :errors], status: :unprocessable_entity
-
     end
   end
 
