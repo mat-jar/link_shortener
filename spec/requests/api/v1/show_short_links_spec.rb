@@ -1,16 +1,17 @@
 require 'rails_helper'
 
-RSpec.describe 'ShortLinks', type: :request do
+RSpec.describe 'Api::V1::ShortLinks', type: :request do
   describe 'POST /show' do
 
     context 'with given original_link' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         post '/api/v1/short_links/show', params:
                           { short_link: {
                             original_url: new_short_link.original_url
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns short_url' do
@@ -31,13 +32,14 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with given slug' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         post '/api/v1/short_links/show', params:
                           { short_link: {
                             slug: new_short_link.slug
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns short_url' do
@@ -58,13 +60,14 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with given short_url' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         post '/api/v1/short_links/show', params:
                           { short_link: {
                             short_url: "#{ENV["HOST_NAME"]}/#{new_short_link.slug}"
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns short_url' do
@@ -85,7 +88,8 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with valid request but empty strings as params' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         post '/api/v1/short_links/show', params:
@@ -93,7 +97,7 @@ RSpec.describe 'ShortLinks', type: :request do
                             original_url: "",
                             slug: "",
                             short_url: ""
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns an unprocessable entity status' do
@@ -106,11 +110,12 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'without params' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         post '/api/v1/short_links/show', params:
-                          { short_link: {} }
+                          { short_link: {} }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns an unprocessable entity status' do
@@ -123,14 +128,15 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with wrong original_url' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         wrong_original_url = new_short_link.original_url + "-foo"
         post '/api/v1/short_links/show', params:
                           { short_link: {
                             original_url: wrong_original_url
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns an unprocessable entity status' do
@@ -143,14 +149,15 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with wrong short_url' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         wrong_short_url = "#{ENV["HOST_NAME"]}/#{new_short_link.slug}" + "-foo"
         post '/api/v1/short_links/show', params:
                           { short_link: {
                             short_url: wrong_short_url
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns an unprocessable entity status' do
@@ -163,14 +170,15 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with wrong slug' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         wrong_slug = new_short_link.slug + "-foo"
         post '/api/v1/short_links/show', params:
                           { short_link: {
                             slug: wrong_slug
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns an unprocessable entity status' do
@@ -183,11 +191,12 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with invalid parameters' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         post '/api/v1/short_links/show', params:
-                          "short_link"
+                          "short_link", headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns an unprocessable entity status' do
@@ -200,7 +209,8 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with given original_link of already used short link' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    include_context "register_and_login_user"
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         get "/#{new_short_link.slug}"
@@ -208,7 +218,7 @@ RSpec.describe 'ShortLinks', type: :request do
         post '/api/v1/short_links/show', params:
                           { short_link: {
                             original_url: new_short_link.original_url
-                          } }
+                          } }, headers: { Authorization:  "Bearer " + token}
       end
 
       it 'returns correct use_counter' do
@@ -217,6 +227,27 @@ RSpec.describe 'ShortLinks', type: :request do
 
       it 'returns a ok status' do
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'with given slug to short_link of other user' do
+    include_context "register_and_login_user"
+    let!(:new_user_2) { FactoryBot.create(:user)}
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user_2.id)}
+
+      before do
+        post '/api/v1/short_links/show', params:
+                          { short_link: {
+                            slug: new_short_link.slug
+                          } }, headers: { Authorization:  "Bearer " + token}
+      end
+
+      it 'returns the message' do
+        expect(JSON.parse(response.body)['message']).to eq('You are not authorized to manage this short link')
+      end
+
+      it 'returns an unauthorized status' do
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 

@@ -1,9 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe 'ShortLinks', type: :request do
+RSpec.describe 'Api::V1::ShortLinks', type: :request do
   describe "GET/redirect" do
     context 'with valid slug' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    let!(:new_user) { FactoryBot.create(:user)}
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         get "/#{new_short_link.slug}"
@@ -20,7 +21,8 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with valid slug and og_tags' do
-    let!(:new_short_link) { FactoryBot.create(:short_link)}
+    let!(:new_user) { FactoryBot.create(:user)}
+    let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
       before do
         new_short_link.og_tags.create!(property: "og:title", content: "Page title")
@@ -38,7 +40,8 @@ RSpec.describe 'ShortLinks', type: :request do
     end
 
     context 'with non-existing slug' do
-      let!(:new_short_link) { FactoryBot.create(:short_link)}
+      let!(:new_user) { FactoryBot.create(:user)}
+      let!(:new_short_link) { FactoryBot.create(:short_link, user_id: new_user.id)}
 
         before do
           non_existing_slug = "#{new_short_link.slug}-foo-bar"
