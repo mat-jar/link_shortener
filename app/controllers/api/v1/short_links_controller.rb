@@ -74,8 +74,10 @@ class Api::V1::ShortLinksController < ApplicationController
       end
     end
 
+    SaveOGTags.call(@short_link, new_og_tags_params)
+
     if @short_link.update(update_short_link_params)
-      render json: @short_link, only: [:original_url], methods: [:short_url], status: :ok
+      render json: @short_link, only: [:original_url], methods: [:short_url], include: [:og_tags => {:only => [:property, :content] }], status: :ok
     else
       render json: @short_link.errors, status: :unprocessable_entity
     end
