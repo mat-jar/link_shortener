@@ -5,6 +5,7 @@ class ShortLink < ApplicationRecord
   attribute :use_counter, default: 0
   validates_format_of :slug, :with => /\A[a-z]+(?:-[a-z]+)*\z/i
 
+  belongs_to :user
   has_many :og_tags, dependent: :destroy
 
   def short_url
