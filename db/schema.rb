@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_24_214221) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_25_213013) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_24_214221) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["original_url", "user_id"], name: "index_short_links_on_original_url_and_user_id", unique: true
     t.index ["slug"], name: "index_short_links_on_slug", unique: true
     t.index ["user_id"], name: "index_short_links_on_user_id"
   end

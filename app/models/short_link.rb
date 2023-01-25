@@ -4,6 +4,7 @@ class ShortLink < ApplicationRecord
   validates :slug, uniqueness: { message: "You can't have two identical slugs" }
   attribute :use_counter, default: 0
   validates_format_of :slug, :with => /\A[a-z]+(?:-[a-z]+)*\z/i
+  validates :original_url, uniqueness: { scope: :user_id, message: "User can't have two short_links with identical original_urls" }
 
   belongs_to :user
   has_many :og_tags, dependent: :destroy
