@@ -8,7 +8,6 @@ class Api::V1::ShortLinksController < ApplicationController
     short_link = ShortLink.where(slug: slug).first
     if short_link
       RedirectToLink.call(self, short_link)
-
     else
       render json: { message: "Short link you provided is wrong" }, status: :not_found
     end
@@ -17,7 +16,7 @@ class Api::V1::ShortLinksController < ApplicationController
   def fetch_og_tags
     begin
       og_tags_hash = FetchOGTags.call(@short_link.original_url)
-    rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::TimeoutError, HTTParty::Error, SocketError => e
+    rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::TimeoutError, HTTParty::Error, OpenSSL::SSL::SSLError, SocketError => e
       @short_link.errors.add("og_tags", e.message)
     else
       if !og_tags_hash.empty?
@@ -44,20 +43,15 @@ class Api::V1::ShortLinksController < ApplicationController
   end
 
   def create
+
+    if  original_url_exists?(new_short_link_params[:original_url])
+      render json: { message: "A short link for the given URL has already been created" }, status: :unprocessable_entity and return
+    end
+
     short_link = ShortLink.new(new_short_link_params)
     short_link.user = @current_user
+    short_link.slug = SetSlug.call(self, new_short_link_params[:slug]); return if performed?
 
-    if new_short_link_params[:slug]
-      if slug_exists?(new_short_link_params[:slug])
-        render json: { message: "Given slug is already used" }, status: :unprocessable_entity and return
-      end
-    else
-      begin
-        random_slug = GenerateSlug.call
-      end while slug_exists?(random_slug)
-
-      short_link.slug = random_slug
-    end
     if short_link.save
       SaveOGTags.call(short_link, new_og_tags_params)
       render json: short_link, only: [:original_url], methods: [:short_url, :errors], include: [:og_tags => {:only => [:property, :content] }], status: :created
@@ -68,10 +62,13 @@ class Api::V1::ShortLinksController < ApplicationController
 
   def update
 
+    updated_original_url = update_short_link_params[:original_url]
+    if updated_original_url && original_url_exists?(updated_original_url)
+      render json: { message: "Given URL is used in another of your short links" }, status: :unprocessable_entity and return
+    end
+
     if update_short_link_params[:slug]
-      if slug_exists?(update_short_link_params[:slug])
-        render json: { message: "Given slug is already used" }, status: :unprocessable_entity and return
-      end
+      SetSlug.call(self, update_short_link_params[:slug]); return if performed?
     end
 
     SaveOGTags.call(@short_link, new_og_tags_params)
@@ -127,15 +124,15 @@ class Api::V1::ShortLinksController < ApplicationController
       params.fetch(:new_og_tags, {})
     end
 
-    def slug_exists?(slug)
-      ShortLink.exists?(:slug => slug)
-    end
-
     def set_short_link_params
       params.fetch(:short_link, {})&.permit(:original_url, :slug, :short_url)
     end
 
     def update_short_link_params
       params.fetch(:update_short_link, {})&.permit(:original_url, :slug)
+    end
+
+    def original_url_exists?(original_url)
+      @current_user.short_links.exists?(:original_url => original_url)
     end
 end
