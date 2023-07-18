@@ -1,0 +1,343 @@
+---
+openapi: 3.0.1
+info:
+  title: link_shortener API
+  version: v1
+  description: Mat-Links (link shortener app) provides a simple api service to shorten
+    links sent via http requests.
+  externalDocs:
+    description: Find out more
+    url: http://example.com
+paths:
+  "/api/v1/login":
+    post:
+      summary: login user
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '200':
+          description: ok
+        '401':
+          description: unauthorized
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: user@example.com
+                    password:
+                      type: string
+                      example: PASSword123
+                  required:
+                  - email
+                  - password
+  "/api/v1/short_links":
+    get:
+      summary: List all short_links of a logged user
+      tags:
+      - Short links
+      security:
+      - bearerAuth: {}
+      responses:
+        '200':
+          description: successful
+    post:
+      summary: Create a new short_link
+      tags:
+      - Short links
+      security:
+      - bearerAuth: {}
+      parameters: []
+      responses:
+        '201':
+          description: created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_short_link:
+                  type: object
+                  properties:
+                    original_url:
+                      type: string
+                      example: https://schowalter.example/edwin.casper
+                    slug:
+                      type: string
+                      example: curriculum-wear
+                  required:
+                  - original_url
+                  - password
+    put:
+      summary: Update short_link
+      tags:
+      - Short links
+      security:
+      - bearerAuth: {}
+      parameters: []
+      responses:
+        '200':
+          description: successful
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short_link:
+                  type: object
+                  properties:
+                    original_url:
+                      type: string
+                      example: https://haley.example/jan
+                    slug:
+                      type: string
+                      example: arena-highway
+                  required:
+                  - email
+                  - password
+                update_short_link:
+                  type: object
+                  properties:
+                    original_url:
+                      type: string
+                      example: https://pfannerstill.test/karl_harvey
+                    slug:
+                      type: string
+                      example: twilight-vegetarian
+                  required:
+                  - email
+                  - password
+                og_tags:
+                  type: object
+                  properties:
+                    og:title:
+                      type: string
+                      example: The Little Foxes
+                    og:type:
+                      type: string
+                      example: video:movie
+                  required:
+                  - email
+                  - password
+    delete:
+      summary: Delete short_link
+      tags:
+      - Short links
+      security:
+      - bearerAuth: {}
+      parameters: []
+      responses:
+        '204':
+          description: no_content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short_link:
+                  type: object
+                  properties:
+                    original_url:
+                      type: string
+                      example: https://lindgren-dach.example/lottie
+                    slug:
+                      type: string
+                      example: strict-defend
+                  required:
+                  - email
+                  - password
+  "/api/v1/short_links/show":
+    post:
+      summary: Show specific short_link
+      tags:
+      - Short links
+      security:
+      - bearerAuth: {}
+      parameters: []
+      responses:
+        '200':
+          description: successful
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short_link:
+                  type: object
+                  properties:
+                    original_url:
+                      type: string
+                      example: https://schmidt-keeling.example/perry
+                    slug:
+                      type: string
+                      example: publish-theorist
+                  required:
+                  - email
+                  - password
+  "/api/v1/short_links/fetch_og_tags":
+    post:
+      summary: Fetch_og_tags from url saved in specific short_link
+      tags:
+      - Short links
+      security:
+      - bearerAuth: {}
+      parameters: []
+      responses:
+        '201':
+          description: created
+        '422':
+          description: unprocessable_entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short_link:
+                  type: object
+                  properties:
+                    original_url:
+                      type: string
+                      example: https://mayert.test/jefferson_hackett
+                    slug:
+                      type: string
+                      example: twilight-capital
+                  required:
+                  - email
+                  - password
+  "/{slug}":
+    parameters:
+    - name: slug
+      in: path
+      description: slug
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Redirect to url in short_link
+      tags:
+      - Redirect
+      responses:
+        '302':
+          description: found
+        '404':
+          description: not_found
+  "/api/v1/users":
+    get:
+      summary: list users
+      tags:
+      - Users
+      security:
+      - bearerAuth: {}
+      responses:
+        '200':
+          description: successful
+    post:
+      summary: create user
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '201':
+          description: created
+        '422':
+          description: unprocessable_entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: nicola@hammes-heidenreich.test
+                    password:
+                      type: string
+                      example: k9mbVzayY6vN6TD
+                  required:
+                  - email
+    put:
+      summary: update user
+      tags:
+      - Users
+      security:
+      - bearerAuth: {}
+      parameters: []
+      responses:
+        '200':
+          description: successful
+        '422':
+          description: unprocessable_entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: edgar@williamson.example
+                    password:
+                      type: string
+                      example: NaN5URlyz3T3RYxQ
+                  required:
+                  - email
+                  - password
+    delete:
+      summary: delete user
+      tags:
+      - Users
+      security:
+      - bearerAuth: {}
+      responses:
+        '204':
+          description: no_content
+  "/api/v1/users/show":
+    get:
+      summary: show user
+      tags:
+      - Users
+      security:
+      - bearerAuth: {}
+      responses:
+        '200':
+          description: successful
+host: moj host
+servers:
+- url: http://localhost:3000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    user:
+      type: object
+      properties:
+        email:
+          type: string
+          example: zack@champlin.test
+        password:
+          type: string
+          example: 79WWwtfN
+      required:
+      - email
+      - password

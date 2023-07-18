@@ -7,4 +7,8 @@ FactoryBot.define do
     email { Faker::Internet.email}
     password { Faker::Internet.password}
   end
+  factory :og_tag do
+    property { "og:" + Faker::Lorem.word  }
+    content  { Faker::Lorem.sentence }
+  end
 end
